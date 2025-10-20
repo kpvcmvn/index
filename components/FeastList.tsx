@@ -50,29 +50,29 @@ const FeastList: React.FC<FeastListProps> = ({ feasts, onSelectFeast, feastTypes
   }, [feasts, searchTerm, selectedType]);
 
   useEffect(() => {
+    // When a filter is active, always reset to the first page.
     if (searchTerm || selectedType !== 'all') {
       setCurrentPage(1);
       return;
-    };
+    }
     
+    // When filters are cleared, find the page with the most relevant feast (today's, tomorrow's, or next).
     let targetFeastIndex = -1;
 
-    // 1. Check for today's feast
+    // We use `filteredFeasts` here because at this point it represents the full, currently unfiltered list.
     targetFeastIndex = filteredFeasts.findIndex(feast => feast.date === todayString);
 
-    // 2. If no feast today, check for tomorrow's feast
     if (targetFeastIndex === -1) {
       targetFeastIndex = filteredFeasts.findIndex(feast => feast.date === tomorrowString);
     }
 
-    // 3. If no feast for today or tomorrow, find the next upcoming feast
     if (targetFeastIndex === -1) {
       const nextUpcomingIndex = filteredFeasts.findIndex(feast => feast.date >= todayString);
       if (nextUpcomingIndex !== -1) {
         targetFeastIndex = nextUpcomingIndex;
       } else {
         if (filteredFeasts.length > 0) {
-          targetFeastIndex = 0;
+          targetFeastIndex = 0; // Fallback to first feast if all are in the past
         }
       }
     }
@@ -81,8 +81,8 @@ const FeastList: React.FC<FeastListProps> = ({ feasts, onSelectFeast, feastTypes
       const pageOfTargetFeast = Math.floor(targetFeastIndex / FEASTS_PER_PAGE) + 1;
       setCurrentPage(pageOfTargetFeast);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    // By adding dependencies, this logic now correctly re-evaluates when filters are cleared.
+  }, [searchTerm, selectedType, filteredFeasts, todayString, tomorrowString]);
 
 
   const paginatedFeasts = useMemo(() => {
@@ -99,12 +99,10 @@ const FeastList: React.FC<FeastListProps> = ({ feasts, onSelectFeast, feastTypes
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setSearchTerm(e.target.value);
-      setCurrentPage(1); // Reset to first page on search
   };
 
   const handleTypeSelect = (type: string) => {
     setSelectedType(type);
-    setCurrentPage(1);
   };
 
   const getFilterButtonStyle = (isActive: boolean): string => {
