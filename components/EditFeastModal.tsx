@@ -17,6 +17,12 @@ const sectionKeys: SectionKey[] = [
 
 const emptyMultilingualString: MultilingualString = {};
 
+// FIX: Define a reusable empty sections object to ensure type correctness.
+const emptySections: Record<SectionKey, MultilingualString> = sectionKeys.reduce((acc, key) => {
+    acc[key] = { ...emptyMultilingualString };
+    return acc;
+}, {} as Record<SectionKey, MultilingualString>);
+
 const EditFeastModal: React.FC<EditFeastModalProps> = ({ feast, onClose, onSave, feastTypes, languages, sectionsConfig }) => {
   const [formData, setFormData] = useState<Partial<Feast>>({});
   const [activeLang, setActiveLang] = useState<string>(languages[0]?.code || 'vi');
@@ -33,15 +39,7 @@ const EditFeastModal: React.FC<EditFeastModalProps> = ({ feast, onClose, onSave,
         title: feast?.title || { ...emptyMultilingualString },
         subtitle: feast?.subtitle || { ...emptyMultilingualString },
         type: feast?.type || defaultFeastTypeName,
-        sections: feast?.sections || {
-            biography: { ...emptyMultilingualString },
-            massReadings: { ...emptyMultilingualString },
-            officeOfReadings: { ...emptyMultilingualString },
-            lauds: { ...emptyMultilingualString },
-            middayPrayer: { ...emptyMultilingualString },
-            vespers: { ...emptyMultilingualString },
-            compline: { ...emptyMultilingualString },
-        },
+        sections: feast?.sections || { ...emptySections },
     };
 
     const savedDraft = localStorage.getItem(draftKey);
@@ -99,7 +97,7 @@ const EditFeastModal: React.FC<EditFeastModalProps> = ({ feast, onClose, onSave,
 
   const handleMultilingualChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'title' | 'subtitle') => {
     const { value } = e.target;
-    setFormData(prev => ({ 
+    setFormData((prev: Partial<Feast>) => ({ 
         ...prev, 
         [field]: {
             ...prev[field],
@@ -110,14 +108,14 @@ const EditFeastModal: React.FC<EditFeastModalProps> = ({ feast, onClose, onSave,
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev: Partial<Feast>) => ({ ...prev, [name]: value }));
   };
 
   const handleSectionContentChange = (sectionKey: SectionKey, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev: Partial<Feast>) => ({
       ...prev,
       sections: {
-        ...prev.sections,
+        ...(prev.sections || emptySections),
         [sectionKey]: {
             ...(prev.sections?.[sectionKey] || emptyMultilingualString),
             [activeLang]: value,
@@ -139,17 +137,7 @@ const EditFeastModal: React.FC<EditFeastModalProps> = ({ feast, onClose, onSave,
       title: formData.title,
       subtitle: formData.subtitle || { ...emptyMultilingualString },
       type: formData.type || (feastTypes.length > 0 ? feastTypes[0].name.vi : 'Lễ nhớ'),
-      // FIX: The empty object `{}` is not assignable to type 'Record<SectionKey, MultilingualString>'. 
-      // Provided a valid default object to ensure type correctness if formData.sections is falsy.
-      sections: (formData.sections as Record<SectionKey, MultilingualString>) || {
-        biography: { ...emptyMultilingualString },
-        massReadings: { ...emptyMultilingualString },
-        officeOfReadings: { ...emptyMultilingualString },
-        lauds: { ...emptyMultilingualString },
-        middayPrayer: { ...emptyMultilingualString },
-        vespers: { ...emptyMultilingualString },
-        compline: { ...emptyMultilingualString },
-      },
+      sections: (formData.sections as Record<SectionKey, MultilingualString>) || { ...emptySections },
     };
     onSave(finalFeast);
     localStorage.removeItem(draftKey);

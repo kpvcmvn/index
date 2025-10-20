@@ -46,7 +46,7 @@ const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     const getML = (textObj: MultilingualString | undefined) => getMultilingualText(textObj, activeLang, defaultLanguage);
 
     const handleTypeNameChange = (index: number, langCode: string, value: string) => {
-        setFeastTypes(prev => {
+        setFeastTypes((prev: FeastType[]) => {
             const newFeastTypes = [...prev];
             newFeastTypes[index] = {
                 ...newFeastTypes[index],
@@ -57,11 +57,11 @@ const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     };
 
     const handleAddType = () => {
-        setFeastTypes(prev => [...prev, { name: { vi: 'Loại Mới', en: 'New Type' } }]);
+        setFeastTypes((prev: FeastType[]) => [...prev, { name: { vi: 'Loại Mới', en: 'New Type' } }]);
     };
 
     const handleRemoveType = (index: number) => {
-        setFeastTypes(prev => prev.filter((_, i) => i !== index));
+        setFeastTypes((prev: FeastType[]) => prev.filter((_, i) => i !== index));
     };
     
     const handleMultilingualChange = (
@@ -69,11 +69,11 @@ const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       setter: React.Dispatch<React.SetStateAction<MultilingualString>>
     ) => {
       const { value } = e.target;
-      setter(prev => ({ ...prev, [activeLang]: value }));
+      setter((prev: MultilingualString) => ({ ...prev, [activeLang]: value }));
     };
 
     const handleMainSectionTitleChange = (index: number, langCode: string, value: string) => {
-        setMainSections(prev => {
+        setMainSections((prev: MainSection[]) => {
             const newSections = [...prev];
             newSections[index] = {
                 ...newSections[index],
@@ -84,7 +84,7 @@ const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     };
     
     const handleMainSectionIdChange = (index: number, value: string) => {
-        setMainSections(prev => {
+        setMainSections((prev: MainSection[]) => {
             const newSections = [...prev];
             newSections[index] = { ...newSections[index], id: value.trim().replace(/\s+/g, '-') };
             return newSections;
@@ -92,7 +92,7 @@ const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     };
 
     const handleMainSectionIconChange = (index: number, value: string) => {
-        setMainSections(prev => {
+        setMainSections((prev: MainSection[]) => {
             const newSections = [...prev];
             newSections[index] = { ...newSections[index], icon: value };
             return newSections;
@@ -105,17 +105,17 @@ const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
             title: { vi: 'Mục Mới', en: 'New Section' },
             icon: 'fa-star'
         };
-        setMainSections(prev => [...prev, newSection]);
+        setMainSections((prev: MainSection[]) => [...prev, newSection]);
     };
 
     const handleRemoveMainSection = (indexToRemove: number) => {
         if (window.confirm(getML({vi: 'Bạn có chắc muốn xóa mục này không? Nội dung liên quan cũng có thể bị ảnh hưởng.', en:'Are you sure you want to delete this section? Related content may also be affected.'}))) {
-            setMainSections(prev => prev.filter((_, index) => index !== indexToRemove));
+            setMainSections((prev: MainSection[]) => prev.filter((_, index) => index !== indexToRemove));
         }
     };
     
     const handleSectionConfigTitleChange = (index: number, langCode: string, value: string) => {
-        setSectionsConfig(prev => {
+        setSectionsConfig((prev: SectionConfig[]) => {
             const newConfigs = [...prev];
             newConfigs[index] = {
                 ...newConfigs[index],
@@ -130,7 +130,7 @@ const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
       field: keyof AboutContent
     ) => {
       const { value } = e.target;
-      setAboutContent(prev => ({
+      setAboutContent((prev: AboutContent) => ({
         ...prev,
         [field]: {
           ...(prev[field]),
@@ -140,13 +140,13 @@ const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     };
 
     const handleLanguageToggle = (codeToToggle: string) => {
-        setLanguages(prev => prev.map(l => 
+        setLanguages((prev: LanguageConfig[]) => prev.map(l => 
             l.code === codeToToggle ? { ...l, enabled: !l.enabled } : l
         ));
     };
 
     const handleLanguageNameChange = (code: string, newName: string) => {
-        setLanguages(prev => prev.map(l => l.code === code ? { ...l, name: newName } : l));
+        setLanguages((prev: LanguageConfig[]) => prev.map(l => l.code === code ? { ...l, name: newName } : l));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -189,7 +189,7 @@ const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     const renderLanguageTabs = () => (
         <div className="mb-4 border-b border-[var(--bg-tertiary)]">
             <div className="flex items-center overflow-x-auto scrollbar-hide space-x-2" role="tablist">
-                {currentSettings.languages.map(lang => (
+                {currentSettings.languages.map((lang: LanguageConfig) => (
                     <button
                         key={lang.code}
                         type="button"

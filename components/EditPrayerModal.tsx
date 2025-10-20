@@ -83,7 +83,7 @@ const EditGenericContentModal: React.FC<EditGenericContentModalProps> = ({ item,
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    setFormData(prev => ({ 
+    setFormData((prev: Partial<GenericContent>) => ({ 
         ...prev, 
         title: {
             ...(prev['title'] as MultilingualString || emptyMultilingualString),
@@ -93,7 +93,7 @@ const EditGenericContentModal: React.FC<EditGenericContentModalProps> = ({ item,
   };
 
   const handleContentChange = (newValue: string) => {
-    setFormData(prev => ({
+    setFormData((prev: Partial<GenericContent>) => ({
         ...prev,
         content: {
             ...(prev.content as MultilingualString || emptyMultilingualString),

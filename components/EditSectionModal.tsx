@@ -21,7 +21,7 @@ const EditSectionModal: React.FC<EditSectionModalProps> = ({ title, content, onC
   };
   
   const handleContentChange = (value: string) => {
-      setNewContent(prev => ({
+      setNewContent((prev: MultilingualString) => ({
           ...prev,
           [activeLang]: value,
       }))
